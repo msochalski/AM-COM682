@@ -10,7 +10,7 @@ on:
 
 env:
   AZURE_FUNCTIONAPP_PACKAGE_PATH: "api"
-  NODE_VERSION: "20.x"
+  NODE_VERSION: "24.x"
 
 jobs:
   build-and-deploy:
@@ -20,7 +20,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
@@ -39,9 +39,15 @@ jobs:
         working-directory: api
         run: npm run test --if-present
 
-      - name: Deploy to Azure Functions
-        uses: Azure/functions-action@v1
+      # Zip the FUNCTION APP package (host.json must be inside api/)
+      - name: Create zip package
+        run: |
+          cd api
+          zip -r ../api.zip .
+
+      - name: Deploy (Zip Deploy) to Azure Function App
+        uses: azure/webapps-deploy@v3
         with:
           app-name: cw2-micromeals-api
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
+          package: api.zip
