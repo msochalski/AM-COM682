@@ -1,0 +1,9 @@
+node_modules
+.git
+.vscode
+*.log
+tests
+**/*.test.*
+**/__tests__/**
+coverage
+*.zip
