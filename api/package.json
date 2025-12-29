@@ -2,7 +2,7 @@
   "name": "am-com682-api",
   "version": "1.0.0",
   "description": "COM682 Azure Functions API with JWT Authentication",
-  "main": "src/index.js",
+  "main": "dist/src/index.js",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
