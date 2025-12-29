@@ -15,7 +15,7 @@ env:
 
 jobs:
   build_and_deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
       - name: Checkout
@@ -25,7 +25,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
+          cache: npm
           cache-dependency-path: api/package-lock.json
 
       - name: Install, build, test (api)
@@ -35,9 +35,9 @@ jobs:
           npm run build --if-present
           npm run test --if-present
 
-      # IMPORTANT: prevent node_modules being included in the zip
-      - name: Remove node_modules before deploy
-        run: rm -rf api/node_modules
+      - name: Prune dev dependencies (smaller deploy)
+        working-directory: api
+        run: npm prune --omit=dev
 
       - name: Deploy to Azure Functions (publish profile)
         uses: Azure/functions-action@v1
@@ -45,5 +45,5 @@ jobs:
           app-name: ${{ env.FUNCTIONAPP_NAME }}
           package: ${{ env.PACKAGE_PATH }}
           publish-profile: ${{ secrets.AZURE_FUNCTIONAPP_PUBLISH_PROFILE }}
-          scm-do-build-during-deployment: true
-          enable-oryx-build: true
+          scm-do-build-during-deployment: false
+          enable-oryx-build: false
