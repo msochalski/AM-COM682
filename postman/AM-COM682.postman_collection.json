@@ -1,0 +1,149 @@
+{
+  "info": {
+    "name": "AM-COM682 API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/health"
+      }
+    },
+    {
+      "name": "Upload Init",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"fileName\": \"demo.jpg\",\n  \"contentType\": \"image/jpeg\"\n}"
+        },
+        "url": "{{baseUrl}}/api/v1/upload-init"
+      }
+    },
+    {
+      "name": "Create Recipe",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Weekend Pasta\",\n  \"description\": \"Quick tomato pasta\",\n  \"instructions\": \"Boil, stir, serve\",\n  \"categories\": [\"Dinner\"],\n  \"raw_image_blob_name\": \"recipes/example.jpg\"\n}"
+        },
+        "url": "{{baseUrl}}/api/v1/recipes"
+      }
+    },
+    {
+      "name": "List Recipes",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/recipes?page=1&pageSize=10&isPublished=true"
+      }
+    },
+    {
+      "name": "Get Recipe",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}"
+      }
+    },
+    {
+      "name": "Update Recipe",
+      "request": {
+        "method": "PATCH",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Updated title\"\n}"
+        },
+        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}"
+      }
+    },
+    {
+      "name": "Delete Recipe",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}"
+      }
+    },
+    {
+      "name": "Publish Recipe",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/publish"
+      }
+    },
+    {
+      "name": "Approve Recipe",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/approve"
+      }
+    },
+    {
+      "name": "Block Recipe",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/block"
+      }
+    },
+    {
+      "name": "Reprocess Image",
+      "request": {
+        "method": "POST",
+        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/reprocess-image"
+      }
+    },
+    {
+      "name": "Feed",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/feed?page=1&pageSize=10"
+      }
+    },
+    {
+      "name": "Add Comment",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"text\": \"Looks great!\"\n}"
+        },
+        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/comments"
+      }
+    },
+    {
+      "name": "List Comments",
+      "request": {
+        "method": "GET",
+        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/comments"
+      }
+    },
+    {
+      "name": "Favorite Recipe",
+      "request": {
+        "method": "POST",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": \"00000000-0000-0000-0000-000000000001\"\n}"
+        },
+        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/favorite"
+      }
+    },
+    {
+      "name": "Unfavorite Recipe",
+      "request": {
+        "method": "DELETE",
+        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/favorite?userId=00000000-0000-0000-0000-000000000001"
+      }
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:7071" },
+    { "key": "recipeId", "value": "" }
+  ]
+}

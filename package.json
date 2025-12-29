@@ -1,0 +1,11 @@
+{
+  "name": "am-com682",
+  "private": true,
+  "scripts": {
+    "dev:api": "npm --prefix api run dev",
+    "dev:web": "npm --prefix web run dev",
+    "build:api": "npm --prefix api run build",
+    "build:web": "npm --prefix web run build",
+    "test:api": "npm --prefix api run test"
+  }
+}
