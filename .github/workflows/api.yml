@@ -28,12 +28,21 @@ jobs:
           cache: npm
           cache-dependency-path: api/package-lock.json
 
-      - name: Install, build, test (api)
+      - name: Install dependencies
         working-directory: api
-        run: |
-          npm ci
-          npm run build --if-present
-          npm run test --if-present
+        run: npm ci
+
+      - name: Build
+        working-directory: api
+        run: npm run build
+        env:
+          # Embed commit SHA and build time for /api/v1/version endpoint
+          COMMIT_SHA: ${{ github.sha }}
+          BUILD_TIME: ${{ github.event.head_commit.timestamp }}
+
+      - name: Run tests
+        working-directory: api
+        run: npm run test
 
       - name: Prune dev dependencies (smaller deploy)
         working-directory: api

@@ -1,15 +1,25 @@
-import { app } from "@azure/functions";
-import { ApiError } from "../lib/errors";
-import { checkHealth } from "../lib/health";
+import { app, InvocationContext } from "@azure/functions";
+import { checkHealth, HealthLogInfo } from "../lib/health";
 import { createHttpHandler, jsonResponse } from "../lib/http";
+import { createLogger } from "../lib/logger";
 
-export const health = createHttpHandler(async () => {
-  try {
-    await checkHealth();
-    return jsonResponse(200, { ok: true });
-  } catch (err) {
-    throw new ApiError(503, "Health check failed", "health_check_failed");
+export const health = createHttpHandler(async (request, context, correlationId) => {
+  const logger = createLogger(context, correlationId);
+  
+  const { response, failedLogs } = await checkHealth();
+  
+  // Log structured info for each failed dependency (no secrets)
+  for (const log of failedLogs) {
+    logger.error("Health check failed for dependency", {
+      dependency: log.dependency,
+      errorName: log.errorName,
+      errorMessage: log.errorMessage,
+      errorStack: log.errorStack
+    });
   }
+  
+  const status = response.ok ? 200 : 503;
+  return jsonResponse(status, response);
 });
 
 app.http("health", {

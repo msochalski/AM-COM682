@@ -5,145 +5,198 @@
   },
   "item": [
     {
-      "name": "Health",
-      "request": {
-        "method": "GET",
-        "url": "{{baseUrl}}/api/v1/health"
-      }
-    },
-    {
-      "name": "Upload Init",
-      "request": {
-        "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"fileName\": \"demo.jpg\",\n  \"contentType\": \"image/jpeg\"\n}"
+      "name": "System",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/health",
+            "description": "Returns health status of all dependencies (SQL, Cosmos, Blob, Queue). Returns 200 if all OK, 503 if any fails."
+          }
         },
-        "url": "{{baseUrl}}/api/v1/upload-init"
-      }
-    },
-    {
-      "name": "Create Recipe",
-      "request": {
-        "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"title\": \"Weekend Pasta\",\n  \"description\": \"Quick tomato pasta\",\n  \"instructions\": \"Boil, stir, serve\",\n  \"categories\": [\"Dinner\"],\n  \"raw_image_blob_name\": \"recipes/example.jpg\"\n}"
+        {
+          "name": "Version Info",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/v1/version",
+            "description": "Returns version, commit SHA, build time, and runtime info."
+          }
         },
-        "url": "{{baseUrl}}/api/v1/recipes"
-      }
+        {
+          "name": "Admin - Initialize SQL Schema",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "X-ADMIN-KEY", "value": "{{adminKey}}", "type": "text" }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/init-sql",
+            "description": "Runs the SQL schema initialization (idempotent). Requires ADMIN_KEY to be configured on the Function App."
+          }
+        }
+      ]
     },
     {
-      "name": "List Recipes",
-      "request": {
-        "method": "GET",
-        "url": "{{baseUrl}}/api/v1/recipes?page=1&pageSize=10&isPublished=true"
-      }
+      "name": "Uploads",
+      "item": [
+        {
+          "name": "Upload Init",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fileName\": \"demo.jpg\",\n  \"contentType\": \"image/jpeg\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/upload-init"
+          }
+        }
+      ]
     },
     {
-      "name": "Get Recipe",
-      "request": {
-        "method": "GET",
-        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}"
-      }
-    },
-    {
-      "name": "Update Recipe",
-      "request": {
-        "method": "PATCH",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"title\": \"Updated title\"\n}"
+      "name": "Recipes",
+      "item": [
+        {
+          "name": "Create Recipe",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Weekend Pasta\",\n  \"description\": \"Quick tomato pasta\",\n  \"instructions\": \"Boil, stir, serve\",\n  \"categories\": [\"Dinner\"],\n  \"raw_image_blob_name\": \"recipes/example.jpg\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/recipes"
+          }
         },
-        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}"
-      }
-    },
-    {
-      "name": "Delete Recipe",
-      "request": {
-        "method": "DELETE",
-        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}"
-      }
-    },
-    {
-      "name": "Publish Recipe",
-      "request": {
-        "method": "POST",
-        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/publish"
-      }
-    },
-    {
-      "name": "Approve Recipe",
-      "request": {
-        "method": "POST",
-        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/approve"
-      }
-    },
-    {
-      "name": "Block Recipe",
-      "request": {
-        "method": "POST",
-        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/block"
-      }
-    },
-    {
-      "name": "Reprocess Image",
-      "request": {
-        "method": "POST",
-        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/reprocess-image"
-      }
+        {
+          "name": "List Recipes",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/recipes?page=1&pageSize=10&isPublished=true"
+          }
+        },
+        {
+          "name": "Get Recipe",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}"
+          }
+        },
+        {
+          "name": "Update Recipe",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated title\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}"
+          }
+        },
+        {
+          "name": "Delete Recipe",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}"
+          }
+        },
+        {
+          "name": "Publish Recipe",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/publish"
+          }
+        },
+        {
+          "name": "Approve Recipe",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/approve"
+          }
+        },
+        {
+          "name": "Block Recipe",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/block"
+          }
+        },
+        {
+          "name": "Reprocess Image",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/reprocess-image"
+          }
+        }
+      ]
     },
     {
       "name": "Feed",
-      "request": {
-        "method": "GET",
-        "url": "{{baseUrl}}/api/v1/feed?page=1&pageSize=10"
-      }
+      "item": [
+        {
+          "name": "Get Feed",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/feed?page=1&pageSize=10"
+          }
+        }
+      ]
     },
     {
-      "name": "Add Comment",
-      "request": {
-        "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"text\": \"Looks great!\"\n}"
+      "name": "Comments",
+      "item": [
+        {
+          "name": "Add Comment",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Looks great!\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/comments"
+          }
         },
-        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/comments"
-      }
+        {
+          "name": "List Comments",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/comments"
+          }
+        }
+      ]
     },
     {
-      "name": "List Comments",
-      "request": {
-        "method": "GET",
-        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/comments"
-      }
-    },
-    {
-      "name": "Favorite Recipe",
-      "request": {
-        "method": "POST",
-        "header": [{ "key": "Content-Type", "value": "application/json" }],
-        "body": {
-          "mode": "raw",
-          "raw": "{\n  \"user_id\": \"00000000-0000-0000-0000-000000000001\"\n}"
+      "name": "Favorites",
+      "item": [
+        {
+          "name": "Favorite Recipe",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"user_id\": \"00000000-0000-0000-0000-000000000001\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/favorite"
+          }
         },
-        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/favorite"
-      }
-    },
-    {
-      "name": "Unfavorite Recipe",
-      "request": {
-        "method": "DELETE",
-        "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/favorite?userId=00000000-0000-0000-0000-000000000001"
-      }
+        {
+          "name": "Unfavorite Recipe",
+          "request": {
+            "method": "DELETE",
+            "url": "{{baseUrl}}/api/v1/recipes/{{recipeId}}/favorite?userId=00000000-0000-0000-0000-000000000001"
+          }
+        }
+      ]
     }
   ],
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:7071" },
-    { "key": "recipeId", "value": "" }
+    { "key": "recipeId", "value": "" },
+    { "key": "adminKey", "value": "" }
   ]
 }

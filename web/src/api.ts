@@ -1,4 +1,5 @@
-const API_BASE = (import.meta as { env: Record<string, string> }).env.VITE_API_BASE_URL || "http://localhost:7071";
+// Get API base URL from environment variable with fallback for local development
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:7071";
 
 function buildUrl(path: string) {
   const base = API_BASE.replace(/\/$/, "");

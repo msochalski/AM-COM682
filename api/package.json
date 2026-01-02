@@ -19,6 +19,8 @@
     "@azure/cosmos": "^4.0.0",
     "@azure/functions": "^4.5.0",
     "@azure/storage-blob": "^12.17.0",
+    "@azure/storage-queue": "^12.16.0",
+    "am-com682": "file:..",
     "applicationinsights": "^2.9.5",
     "bcryptjs": "^2.4.3",
     "jsonwebtoken": "^9.0.2",

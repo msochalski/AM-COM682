@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "am-com682-api": "file:../api",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.26.2"
