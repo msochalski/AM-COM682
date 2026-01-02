@@ -1,11 +1,13 @@
 import { getCosmosClient } from "./cosmos";
 import { getSqlPool } from "./sql";
-import { getBlobServiceClient } from "./storage";
+import { getBlobServiceClient, getStorageAuthMode, StorageAuthMode } from "./storage";
 import { QueueServiceClient, StorageSharedKeyCredential } from "@azure/storage-queue";
 
 export type HealthCheckResult = {
   ok: boolean;
   error?: string;
+  authMode?: StorageAuthMode;
+  account?: string;
 };
 
 export type HealthResponse = {
@@ -90,21 +92,13 @@ async function checkCosmos(): Promise<HealthCheckResult> {
 }
 
 async function checkBlob(): Promise<HealthCheckResult> {
-  const account = process.env.BLOB_ACCOUNT;
-  const key = process.env.BLOB_KEY;
-  const connString = process.env.BLOB_CONNECTION_STRING || process.env.AZURE_STORAGE_CONNECTION_STRING || process.env.AzureWebJobsStorage;
-  
-  if (!account && !connString) {
-    return { ok: false, error: "Missing env var: BLOB_ACCOUNT or BLOB_CONNECTION_STRING" };
-  }
-  if (account && !key && !connString) {
-    return { ok: false, error: "Missing env var: BLOB_KEY" };
-  }
-  
   const rawContainer = process.env.RAW_CONTAINER ?? "raw";
   const processedContainer = process.env.PROCESSED_CONTAINER ?? "processed";
   
   try {
+    // Get auth mode info (will throw if misconfigured)
+    const { authMode, account } = getStorageAuthMode();
+    
     const blobService = getBlobServiceClient();
     
     // Check both containers exist
@@ -117,13 +111,13 @@ async function checkBlob(): Promise<HealthCheckResult> {
     ]);
     
     if (!rawExists) {
-      return { ok: false, error: `Container not found: ${rawContainer}` };
+      return { ok: false, error: `Container not found: ${rawContainer}`, authMode, account };
     }
     if (!processedExists) {
-      return { ok: false, error: `Container not found: ${processedContainer}` };
+      return { ok: false, error: `Container not found: ${processedContainer}`, authMode, account };
     }
     
-    return { ok: true };
+    return { ok: true, authMode, account };
   } catch (error) {
     const sanitized = sanitizeErrorForLog(error);
     return { ok: false, error: sanitized.message };
@@ -131,26 +125,25 @@ async function checkBlob(): Promise<HealthCheckResult> {
 }
 
 async function checkQueue(): Promise<HealthCheckResult> {
-  const account = process.env.BLOB_ACCOUNT;
-  const key = process.env.BLOB_KEY;
-  const connString = process.env.BLOB_CONNECTION_STRING || process.env.AZURE_STORAGE_CONNECTION_STRING || process.env.AzureWebJobsStorage;
-  
-  if (!account && !connString) {
-    return { ok: false, error: "Missing env var: BLOB_ACCOUNT or connection string for queue" };
-  }
-  if (account && !key && !connString) {
-    return { ok: false, error: "Missing env var: BLOB_KEY" };
-  }
-  
   const queueName = process.env.MEDIA_QUEUE ?? "media-process";
   
   try {
+    // Get auth mode info (will throw if misconfigured)
+    const { authMode, account } = getStorageAuthMode();
+    
     let queueService: QueueServiceClient;
+    
+    // Use same priority as storage.ts: AzureWebJobsStorage > other connection strings > shared key
+    const azureWebJobsStorage = process.env.AzureWebJobsStorage;
+    const connString = azureWebJobsStorage || 
+      process.env.BLOB_CONNECTION_STRING || 
+      process.env.AZURE_STORAGE_CONNECTION_STRING;
     
     if (connString) {
       queueService = QueueServiceClient.fromConnectionString(connString);
     } else {
-      const credential = new StorageSharedKeyCredential(account!, key!);
+      const key = process.env.BLOB_KEY!;
+      const credential = new StorageSharedKeyCredential(account, key);
       queueService = new QueueServiceClient(
         `https://${account}.queue.core.windows.net`,
         credential
@@ -161,10 +154,10 @@ async function checkQueue(): Promise<HealthCheckResult> {
     const exists = await queueClient.exists();
     
     if (!exists) {
-      return { ok: false, error: `Queue not found: ${queueName}` };
+      return { ok: false, error: `Queue not found: ${queueName}`, authMode, account };
     }
     
-    return { ok: true };
+    return { ok: true, authMode, account };
   } catch (error) {
     const sanitized = sanitizeErrorForLog(error);
     return { ok: false, error: sanitized.message };
