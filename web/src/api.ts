@@ -73,7 +73,7 @@ export async function listRecipes(params: Record<string, string | number | boole
 }
 
 export async function getRecipe(id: string) {
-  return apiRequest<Recipe>(`/api/v1/recipes/${id}`);
+  return apiRequest<Recipe>(`/api/v1/recipe/${id}`);
 }
 
 export async function createRecipe(payload: Record<string, unknown>) {
@@ -84,14 +84,14 @@ export async function createRecipe(payload: Record<string, unknown>) {
 }
 
 export async function updateRecipe(id: string, payload: Record<string, unknown>) {
-  return apiRequest<Recipe>(`/api/v1/recipes/${id}`, {
+  return apiRequest<Recipe>(`/api/v1/recipe/${id}`, {
     method: "PATCH",
     body: JSON.stringify(payload)
   });
 }
 
 export async function deleteRecipe(id: string) {
-  return apiRequest<{ deleted: boolean }>(`/api/v1/recipes/${id}`, {
+  return apiRequest<{ deleted: boolean }>(`/api/v1/recipe/${id}`, {
     method: "DELETE"
   });
 }
