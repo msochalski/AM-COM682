@@ -4,7 +4,6 @@ import "./functions/adminInitSql";
 import "./functions/uploadInit";
 import "./functions/recipesList";
 import "./functions/recipesGet";
-import "./functions/recipesUpdate";
 import "./functions/recipesDelete";
 import "./functions/recipesPublish";
 import "./functions/recipesModeration";
