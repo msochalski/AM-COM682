@@ -1,4 +1,4 @@
-import * as azfunc from "@azure/functions";
+import { app, output } from "@azure/functions";
 import { createHttpHandler, jsonResponse, readJson } from "../lib/http";
 import { createRecipe } from "../lib/recipesRepo";
 import {
@@ -10,15 +10,9 @@ import {
   readUuid
 } from "../lib/validation";
 
-const app = azfunc.app;
-const output = (azfunc as any).output as {
-  storageQueue: (options: { queueName: string; connection: string; name: string }) => any;
-};
-
 const mediaQueueOutput = output.storageQueue({
   queueName: process.env.MEDIA_QUEUE ?? "media-process",
   connection: "AzureWebJobsStorage",
-  name: "mediaQueue"
 });
 
 export const recipesCreate = createHttpHandler(async (request, context) => {
