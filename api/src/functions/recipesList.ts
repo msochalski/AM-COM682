@@ -165,8 +165,8 @@ async function recipesHandler(request: HttpRequest, context: InvocationContext):
 app.http("recipes", {
   methods: ["GET", "POST", "OPTIONS"],
   authLevel: "anonymous",
-  route: "api/v1/dishes",
-  extraOutputs: [mediaQueueOutput],
+  route: "api/v1/recipes",
+  // extraOutputs temporarily removed for testing
   handler: recipesHandler
 });
 
