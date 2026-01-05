@@ -39,12 +39,13 @@ export const recipesList = createHttpHandler(async (request) => {
   return jsonResponse(200, result);
 });
 
-app.http("recipesList", {
-  methods: ["GET"],
-  authLevel: "anonymous",
-  route: "api/v1/recipes",
-  handler: recipesList
-});
+// TEMPORARILY DISABLED to test recipesGet
+// app.http("recipesList", {
+//   methods: ["GET"],
+//   authLevel: "anonymous",
+//   route: "api/v1/recipes",
+//   handler: recipesList
+// });
 
 // POST /api/v1/recipes - Create recipe
 export const recipesCreate = createHttpHandler(async (request, context) => {
