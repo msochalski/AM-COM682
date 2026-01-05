@@ -37,6 +37,6 @@ export const recipesDelete = createHttpHandler(async (request) => {
 app.http("recipesDelete", {
   methods: ["DELETE", "OPTIONS"],
   authLevel: "anonymous",
-  route: "api/v1/recipes/{id}",
+  route: "api/v1/recipe/{id}",
   handler: recipesDelete
 });
