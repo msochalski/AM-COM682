@@ -2,7 +2,6 @@ import "./functions/health";
 import "./functions/version";
 import "./functions/adminInitSql";
 import "./functions/uploadInit";
-import "./functions/recipesCreate";
 import "./functions/recipesList";
 import "./functions/recipesGet";
 import "./functions/recipesUpdate";
