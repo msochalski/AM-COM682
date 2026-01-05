@@ -1,9 +1,27 @@
-node_modules
+# Git and IDE files
 .git
+.gitignore
 .vscode
-*.log
-tests
+
+# Source files (TypeScript) - only deploy compiled JS
+src/
+scripts/
+sql/
+tests/
+*.ts
+!*.d.ts
+tsconfig.json
+vitest.config.ts
+
+# Test files
 **/*.test.*
 **/__tests__/**
 coverage
+
+# Misc
+*.log
 *.zip
+local.settings*.json
+etc/
+
+# NOTE: Do NOT exclude node_modules or dist - they are required at runtime
