@@ -1,4 +1,4 @@
-import { app, output } from "@azure/functions";
+import { app, output, InvocationContext } from "@azure/functions";
 import { createHttpHandler, jsonResponse, readJson } from "../lib/http";
 import { createRecipe } from "../lib/recipesRepo";
 import {
@@ -10,8 +10,9 @@ import {
   readUuid
 } from "../lib/validation";
 
+// Queue output binding for media processing
 const mediaQueueOutput = output.storageQueue({
-  queueName: process.env.MEDIA_QUEUE ?? "media-process",
+  queueName: "media-process",
   connection: "AzureWebJobsStorage",
 });
 
@@ -49,11 +50,12 @@ export const recipesCreate = createHttpHandler(async (request, context) => {
     userEmail: payload.user_email ?? null
   });
 
+  // Queue message for media processing if image was provided
   if (payload.raw_image_blob_name) {
-    (context as any).extraOutputs?.set?.(mediaQueueOutput, JSON.stringify({
+    context.extraOutputs.set(mediaQueueOutput, {
       recipeId: recipe.id,
       blobName: payload.raw_image_blob_name
-    }));
+    });
   }
 
   return jsonResponse(201, recipe);
@@ -63,6 +65,6 @@ app.http("recipesCreate", {
   methods: ["POST", "OPTIONS"],
   authLevel: "anonymous",
   route: "api/v1/recipes",
-  extraOutputs: [mediaQueueOutput as any],
+  extraOutputs: [mediaQueueOutput],
   handler: recipesCreate
 });
