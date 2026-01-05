@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  FUNCTIONAPP_NAME: cw2-micromeals-api
+  FUNCTIONAPP_NAME: cw2-micromeals-api-d6c2bwbycrcjguhf
   PACKAGE_PATH: api
   NODE_VERSION: "24.x"
 
