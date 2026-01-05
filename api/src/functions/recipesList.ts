@@ -1,5 +1,5 @@
 import { app, HttpRequest, InvocationContext, HttpResponseInit } from "@azure/functions";
-import { jsonResponse, readJson } from "../lib/http";
+import { createHttpHandler, jsonResponse, readJson } from "../lib/http";
 import { listRecipes, createRecipe } from "../lib/recipesRepo";
 import { sendQueueMessage } from "../lib/storage";
 import {
@@ -12,27 +12,9 @@ import {
   readStringArray,
   readUuid
 } from "../lib/validation";
-import { v4 as uuidv4 } from "uuid";
-import { createLogger } from "../lib/logger";
-import { ApiError, isApiError } from "../lib/errors";
 
-const defaultCorsOrigin = process.env.CORS_ORIGIN ?? "http://localhost:5173";
-
-function getCorsHeaders(): Record<string, string> {
-  return {
-    "Access-Control-Allow-Origin": defaultCorsOrigin,
-    "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, x-correlation-id",
-    "Access-Control-Allow-Credentials": "true"
-  };
-}
-
-function getCorrelationId(request: HttpRequest): string {
-  const header = request.headers?.get("x-correlation-id") || request.headers?.get("x-request-id");
-  return header ?? uuidv4();
-}
-
-async function handleList(request: HttpRequest): Promise<HttpResponseInit> {
+// GET /api/v1/recipes - List recipes
+export const recipesList = createHttpHandler(async (request) => {
   const page = readPositiveInt(request.query.get("page"), "page", {
     defaultValue: 1,
     min: 1
@@ -55,9 +37,17 @@ async function handleList(request: HttpRequest): Promise<HttpResponseInit> {
   });
 
   return jsonResponse(200, result);
-}
+});
 
-async function handleCreate(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
+app.http("recipesList", {
+  methods: ["GET", "OPTIONS"],
+  authLevel: "anonymous",
+  route: "api/v1/recipes",
+  handler: recipesList
+});
+
+// POST /api/v1/recipes - Create recipe
+export const recipesCreate = createHttpHandler(async (request, context) => {
   const body = await readJson<unknown>(request);
   const data = asRecord(body);
 
@@ -100,69 +90,11 @@ async function handleCreate(request: HttpRequest, context: InvocationContext): P
   }
 
   return jsonResponse(201, recipe);
-}
-
-function toErrorResponse(err: unknown): HttpResponseInit {
-  if (isApiError(err)) {
-    return jsonResponse(err.status, {
-      error: err.code,
-      message: err.message
-    });
-  }
-  return jsonResponse(500, {
-    error: "internal_error",
-    message: "Internal server error"
-  });
-}
-
-// Combined handler for GET and POST on /api/v1/recipes
-async function recipesHandler(request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> {
-  const correlationId = getCorrelationId(request);
-  const logger = createLogger(context, correlationId);
-  const corsHeaders = getCorsHeaders();
-
-  logger.info("Request received", {
-    method: request.method,
-    url: request.url
-  });
-
-  const addHeaders = (response: HttpResponseInit): HttpResponseInit => ({
-    ...response,
-    headers: {
-      ...(response.headers ?? {}),
-      ...corsHeaders,
-      "x-correlation-id": correlationId
-    }
-  });
-
-  if (request.method === "OPTIONS") {
-    return {
-      status: 204,
-      headers: { ...corsHeaders, "x-correlation-id": correlationId }
-    };
-  }
-
-  try {
-    if (request.method === "GET") {
-      return addHeaders(await handleList(request));
-    } else if (request.method === "POST") {
-      return addHeaders(await handleCreate(request, context));
-    }
-    return addHeaders(jsonResponse(405, { error: "method_not_allowed" }));
-  } catch (err) {
-    logger.error("Request failed", {
-      error: err instanceof Error ? err.message : String(err)
-    });
-    return addHeaders(toErrorResponse(err));
-  }
-}
-
-app.http("recipes", {
-  methods: ["GET", "POST", "OPTIONS"],
-  authLevel: "anonymous",
-  route: "api/v1/recipes",
-  // extraOutputs temporarily removed for testing
-  handler: recipesHandler
 });
 
-// Timestamp: 2026-01-05T18:20
+app.http("recipesCreate", {
+  methods: ["POST"],
+  authLevel: "anonymous",
+  route: "api/v1/recipes",
+  handler: recipesCreate
+});
