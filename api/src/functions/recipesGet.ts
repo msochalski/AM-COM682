@@ -18,7 +18,7 @@ export const recipesGet = createHttpHandler(async (request) => {
 });
 
 app.http("recipesGet", {
-  methods: ["GET", "OPTIONS"],
+  methods: ["GET", "POST", "OPTIONS"],
   authLevel: "anonymous",
   route: "api/v1/recipes/{id}",
   handler: recipesGet
