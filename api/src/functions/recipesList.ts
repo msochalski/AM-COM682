@@ -1,6 +1,7 @@
-import { app, output, HttpRequest, InvocationContext, HttpResponseInit } from "@azure/functions";
+import { app, HttpRequest, InvocationContext, HttpResponseInit } from "@azure/functions";
 import { jsonResponse, readJson } from "../lib/http";
 import { listRecipes, createRecipe } from "../lib/recipesRepo";
+import { sendQueueMessage } from "../lib/storage";
 import {
   asRecord,
   readBoolean,
@@ -16,12 +17,6 @@ import { createLogger } from "../lib/logger";
 import { ApiError, isApiError } from "../lib/errors";
 
 const defaultCorsOrigin = process.env.CORS_ORIGIN ?? "http://localhost:5173";
-
-// Queue output binding for media processing
-const mediaQueueOutput = output.storageQueue({
-  queueName: "media-process",
-  connection: "AzureWebJobsStorage",
-});
 
 function getCorsHeaders(): Record<string, string> {
   return {
@@ -98,7 +93,7 @@ async function handleCreate(request: HttpRequest, context: InvocationContext): P
 
   // Queue message for media processing if image was provided
   if (payload.raw_image_blob_name) {
-    context.extraOutputs.set(mediaQueueOutput, {
+    await sendQueueMessage("media-process", {
       recipeId: recipe.id,
       blobName: payload.raw_image_blob_name
     });

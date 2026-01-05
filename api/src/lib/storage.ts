@@ -1,4 +1,5 @@
 import { BlobServiceClient, StorageSharedKeyCredential, ContainerClient } from "@azure/storage-blob";
+import { QueueServiceClient, StorageSharedKeyCredential as QueueStorageSharedKeyCredential } from "@azure/storage-queue";
 import { ApiError } from "./errors";
 
 let blobServiceClient: BlobServiceClient | null = null;
@@ -119,4 +120,32 @@ export async function getRawContainerClient(): Promise<ContainerClient> {
 export async function getProcessedContainerClient(): Promise<ContainerClient> {
   const name = process.env.PROCESSED_CONTAINER ?? "processed";
   return getContainerClient(name);
+}
+
+let queueServiceClient: QueueServiceClient | null = null;
+
+function getQueueServiceClient(): QueueServiceClient {
+  if (queueServiceClient) {
+    return queueServiceClient;
+  }
+
+  const info = getStorageAccountInfo();
+  if (info.connectionString) {
+    queueServiceClient = QueueServiceClient.fromConnectionString(info.connectionString);
+  } else {
+    const credential = new QueueStorageSharedKeyCredential(info.account, info.key);
+    queueServiceClient = new QueueServiceClient(
+      `https://${info.account}.queue.core.windows.net`,
+      credential
+    );
+  }
+
+  return queueServiceClient;
+}
+
+export async function sendQueueMessage(queueName: string, message: unknown): Promise<void> {
+  const client = getQueueServiceClient().getQueueClient(queueName);
+  await client.createIfNotExists();
+  const messageText = Buffer.from(JSON.stringify(message)).toString("base64");
+  await client.sendMessage(messageText);
 }
