@@ -2,7 +2,7 @@ import { app } from "@azure/functions";
 import { ApiError } from "../lib/errors";
 import { createHttpHandler, jsonResponse, readJson } from "../lib/http";
 import { getRecipeById, updateRecipe } from "../lib/recipesRepo";
-import { getComments } from "../lib/cosmosRepo";
+import { getComments, addComment } from "../lib/cosmosRepo";
 import { asRecord, readIngredients, readPositiveInt, readString, readStringArray } from "../lib/validation";
 
 export const recipesGet = createHttpHandler(async (request) => {
@@ -94,9 +94,35 @@ export const recipeComments = createHttpHandler(async (request) => {
   return jsonResponse(200, { items, page, pageSize });
 });
 
-app.http("recipeComments", {
+app.http("recipeCommentsList", {
   methods: ["GET", "OPTIONS"],
   authLevel: "anonymous",
   route: "api/v1/recipe/{id}/comments",
   handler: recipeComments
+});
+
+// POST comment
+export const recipeCommentsCreate = createHttpHandler(async (request) => {
+  const id = request.params.id;
+  if (!id) {
+    throw new ApiError(400, "Recipe id is required", "invalid_request");
+  }
+
+  const body = await readJson<unknown>(request);
+  const data = asRecord(body);
+  const text = readString(data.text, "text", { required: true, minLength: 1 }) as string;
+  const userId =
+    (readString(data.user_id, "user_id", { allowNull: true, minLength: 1 }) as string | null | undefined) ??
+    process.env.DEFAULT_USER_ID ??
+    "00000000-0000-0000-0000-000000000001";
+
+  const comment = await addComment(id, userId, text);
+  return jsonResponse(201, comment);
+});
+
+app.http("recipeCommentsCreate", {
+  methods: ["POST"],
+  authLevel: "anonymous",
+  route: "api/v1/recipe/{id}/comments",
+  handler: recipeCommentsCreate
 });
