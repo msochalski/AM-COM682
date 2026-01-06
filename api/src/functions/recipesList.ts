@@ -83,10 +83,19 @@ export const recipesCreate = createHttpHandler(async (request, context) => {
 
   // Queue message for media processing if image was provided
   if (payload.raw_image_blob_name) {
-    await sendQueueMessage("media-process", {
+    context.log("Sending queue message for media processing", {
       recipeId: recipe.id,
       blobName: payload.raw_image_blob_name
     });
+    try {
+      await sendQueueMessage("media-process", {
+        recipeId: recipe.id,
+        blobName: payload.raw_image_blob_name
+      });
+      context.log("Queue message sent successfully");
+    } catch (err) {
+      context.error("Failed to send queue message", err);
+    }
   }
 
   return jsonResponse(201, recipe);
