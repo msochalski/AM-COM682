@@ -103,7 +103,7 @@ export async function publishRecipe(id: string) {
 }
 
 export async function addComment(recipeId: string, text: string, userId?: string) {
-  return apiRequest<Comment>(`/api/v1/comments/${recipeId}`, {
+  return apiRequest<Comment>(`/api/v1/recipe/${recipeId}/comments`, {
     method: "POST",
     body: JSON.stringify({ text, user_id: userId })
   });
@@ -111,7 +111,7 @@ export async function addComment(recipeId: string, text: string, userId?: string
 
 export async function getComments(recipeId: string, page = 1, pageSize = 20) {
   return apiRequest<{ items: Comment[] }>(
-    `/api/v1/comments/${recipeId}?page=${page}&pageSize=${pageSize}`
+    `/api/v1/recipe/${recipeId}/comments?page=${page}&pageSize=${pageSize}`
   );
 }
 

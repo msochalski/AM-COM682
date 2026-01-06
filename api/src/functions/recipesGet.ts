@@ -2,7 +2,8 @@ import { app } from "@azure/functions";
 import { ApiError } from "../lib/errors";
 import { createHttpHandler, jsonResponse, readJson } from "../lib/http";
 import { getRecipeById, updateRecipe } from "../lib/recipesRepo";
-import { asRecord, readIngredients, readString, readStringArray } from "../lib/validation";
+import { getComments } from "../lib/cosmosRepo";
+import { asRecord, readIngredients, readPositiveInt, readString, readStringArray } from "../lib/validation";
 
 export const recipesGet = createHttpHandler(async (request) => {
   const id = request.params.id;
@@ -70,4 +71,32 @@ app.http("recipeUpdate", {
   authLevel: "anonymous",
   route: "api/v1/recipe/{id}",
   handler: recipesUpdate
+});
+
+// Comments - moved here to avoid routing issues
+export const recipeComments = createHttpHandler(async (request) => {
+  const id = request.params.id;
+  if (!id) {
+    throw new ApiError(400, "Recipe id is required", "invalid_request");
+  }
+
+  const page = readPositiveInt(request.query.get("page"), "page", {
+    defaultValue: 1,
+    min: 1
+  });
+  const pageSize = readPositiveInt(request.query.get("pageSize"), "pageSize", {
+    defaultValue: 20,
+    min: 1,
+    max: 100
+  });
+
+  const items = await getComments(id, page, pageSize);
+  return jsonResponse(200, { items, page, pageSize });
+});
+
+app.http("recipeComments", {
+  methods: ["GET", "OPTIONS"],
+  authLevel: "anonymous",
+  route: "api/v1/recipe/{id}/comments",
+  handler: recipeComments
 });
