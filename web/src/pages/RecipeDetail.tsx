@@ -21,7 +21,9 @@ export default function RecipeDetail() {
 
     getComments(id)
       .then((data) => setComments(data.items ?? []))
-      .catch((err: Error) => setStatus(err.message));
+      .catch(() => {
+        // Silently fail - comments are optional
+      });
   }, [id]);
 
   const handlePublish = async () => {
