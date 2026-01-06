@@ -97,13 +97,13 @@ export async function deleteRecipe(id: string) {
 }
 
 export async function publishRecipe(id: string) {
-  return apiRequest<{ id: string }>(`/api/v1/recipes/${id}/publish`, {
+  return apiRequest<{ id: string }>(`/api/v1/recipe/${id}/publish`, {
     method: "POST"
   });
 }
 
 export async function addComment(recipeId: string, text: string, userId?: string) {
-  return apiRequest<Comment>(`/api/v1/recipes/${recipeId}/comments`, {
+  return apiRequest<Comment>(`/api/v1/recipe/${recipeId}/comments`, {
     method: "POST",
     body: JSON.stringify({ text, user_id: userId })
   });
@@ -111,7 +111,7 @@ export async function addComment(recipeId: string, text: string, userId?: string
 
 export async function getComments(recipeId: string, page = 1, pageSize = 20) {
   return apiRequest<{ items: Comment[] }>(
-    `/api/v1/recipes/${recipeId}/comments?page=${page}&pageSize=${pageSize}`
+    `/api/v1/recipe/${recipeId}/comments?page=${page}&pageSize=${pageSize}`
   );
 }
 

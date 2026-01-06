@@ -45,13 +45,13 @@ export const commentsList = createHttpHandler(async (request) => {
 app.http("commentsCreate", {
   methods: ["POST", "OPTIONS"],
   authLevel: "anonymous",
-  route: "api/v1/recipes/{id}/comments",
+  route: "api/v1/recipe/{id}/comments",
   handler: commentsCreate
 });
 
 app.http("commentsList", {
   methods: ["GET", "OPTIONS"],
   authLevel: "anonymous",
-  route: "api/v1/recipes/{id}/comments",
+  route: "api/v1/recipe/{id}/comments",
   handler: commentsList
 });

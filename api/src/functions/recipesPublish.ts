@@ -31,6 +31,6 @@ export const recipesPublish = createHttpHandler(async (request, _context, correl
 app.http("recipesPublish", {
   methods: ["POST", "OPTIONS"],
   authLevel: "anonymous",
-  route: "api/v1/recipes/{id}/publish",
+  route: "api/v1/recipe/{id}/publish",
   handler: recipesPublish
 });
