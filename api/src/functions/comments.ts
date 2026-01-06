@@ -42,14 +42,14 @@ export const commentsList = createHttpHandler(async (request) => {
   return jsonResponse(200, { items, page, pageSize });
 });
 
-app.http("commentsCreate", {
+app.http("createComment", {
   methods: ["POST", "OPTIONS"],
   authLevel: "anonymous",
   route: "api/v1/recipe/{id}/comments",
   handler: commentsCreate
 });
 
-app.http("commentsList", {
+app.http("listComments", {
   methods: ["GET", "OPTIONS"],
   authLevel: "anonymous",
   route: "api/v1/recipe/{id}/comments",
