@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { ApiError, isApiError } from "./errors";
 import { createLogger } from "./logger";
 
-const defaultCorsOrigin = process.env.CORS_ORIGIN ?? "http://localhost:5173";
+const allowedOrigins = (process.env.CORS_ORIGINS ?? "http://localhost:5173").split(",").map(o => o.trim());
 
 export type HttpHandler = (
   request: HttpRequest,
@@ -15,7 +15,7 @@ export function createHttpHandler(handler: HttpHandler) {
   return async (request: HttpRequest, context: InvocationContext): Promise<HttpResponseInit> => {
     const correlationId = getCorrelationId(request);
     const logger = createLogger(context, correlationId);
-    const corsHeaders = getCorsHeaders();
+    const corsHeaders = getCorsHeaders(request);
 
     logger.info("Request received", {
       method: request.method,
@@ -76,9 +76,12 @@ function getCorrelationId(request: HttpRequest): string {
   return header ?? uuidv4();
 }
 
-function getCorsHeaders(): Record<string, string> {
+function getCorsHeaders(request: HttpRequest): Record<string, string> {
+  const origin = request.headers?.get("origin") ?? "";
+  const allowedOrigin = allowedOrigins.includes(origin) ? origin : allowedOrigins[0];
+  
   return {
-    "Access-Control-Allow-Origin": defaultCorsOrigin,
+    "Access-Control-Allow-Origin": allowedOrigin,
     "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, x-correlation-id",
     "Access-Control-Allow-Credentials": "true"
