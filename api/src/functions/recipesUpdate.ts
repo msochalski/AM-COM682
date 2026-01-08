@@ -47,6 +47,6 @@ export const recipesUpdate = createHttpHandler(async (request) => {
 app.http("updateRecipe", {
   methods: ["PATCH", "PUT", "OPTIONS"],
   authLevel: "anonymous",
-  route: "api/v1/recipe/{id}",
+  route: "api/v1/recipes/{id}",
   handler: recipesUpdate
 });

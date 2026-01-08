@@ -73,7 +73,7 @@ export async function listRecipes(params: Record<string, string | number | boole
 }
 
 export async function getRecipe(id: string) {
-  return apiRequest<Recipe>(`/api/v1/recipe/${id}`);
+  return apiRequest<Recipe>(`/api/v1/recipes/${id}`);
 }
 
 export async function createRecipe(payload: Record<string, unknown>) {
@@ -84,26 +84,26 @@ export async function createRecipe(payload: Record<string, unknown>) {
 }
 
 export async function updateRecipe(id: string, payload: Record<string, unknown>) {
-  return apiRequest<Recipe>(`/api/v1/recipe/${id}`, {
+  return apiRequest<Recipe>(`/api/v1/recipes/${id}`, {
     method: "PATCH",
     body: JSON.stringify(payload)
   });
 }
 
 export async function deleteRecipe(id: string) {
-  return apiRequest<{ deleted: boolean }>(`/api/v1/recipe/${id}`, {
+  return apiRequest<{ deleted: boolean }>(`/api/v1/recipes/${id}`, {
     method: "DELETE"
   });
 }
 
 export async function publishRecipe(id: string) {
-  return apiRequest<{ id: string }>(`/api/v1/recipe/${id}/publish`, {
+  return apiRequest<{ id: string }>(`/api/v1/recipes/${id}/publish`, {
     method: "POST"
   });
 }
 
 export async function addComment(recipeId: string, text: string, userId?: string) {
-  return apiRequest<Comment>(`/api/v1/recipe/${recipeId}/comments`, {
+  return apiRequest<Comment>(`/api/v1/recipes/${recipeId}/comments`, {
     method: "POST",
     body: JSON.stringify({ text, user_id: userId })
   });
@@ -111,7 +111,7 @@ export async function addComment(recipeId: string, text: string, userId?: string
 
 export async function getComments(recipeId: string, page = 1, pageSize = 20) {
   return apiRequest<{ items: Comment[] }>(
-    `/api/v1/recipe/${recipeId}/comments?page=${page}&pageSize=${pageSize}`
+    `/api/v1/recipes/${recipeId}/comments?page=${page}&pageSize=${pageSize}`
   );
 }
 
@@ -136,6 +136,17 @@ export async function uploadToSas(uploadUrl: string, file: File) {
     const text = await response.text();
     throw new Error(text || "Upload failed");
   }
-}// Rebuild trigger
-// Rebuild
-// trigger
+}
+
+export async function approveRecipe(id: string) {
+  return apiRequest<{ id: string }>(`/api/v1/recipes/${id}/approve`, {
+    method: "POST"
+  });
+}
+
+export async function blockRecipe(id: string, reason?: string) {
+  return apiRequest<{ id: string }>(`/api/v1/recipes/${id}/block`, {
+    method: "POST",
+    body: JSON.stringify({ reason })
+  });
+}

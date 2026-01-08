@@ -28,6 +28,6 @@ export const recipesReprocessImage = createHttpHandler(async (request) => {
 app.http("recipesReprocessImage", {
   methods: ["POST", "OPTIONS"],
   authLevel: "anonymous",
-  route: "api/v1/recipe/{id}/reprocess-image",
+  route: "api/v1/recipes/{id}/reprocess-image",
   handler: recipesReprocessImage
 });

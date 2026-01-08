@@ -41,13 +41,13 @@ export const favoriteRemove = createHttpHandler(async (request) => {
 app.http("favoriteAdd", {
   methods: ["POST", "OPTIONS"],
   authLevel: "anonymous",
-  route: "api/v1/recipe/{id}/favorite",
+  route: "api/v1/recipes/{id}/favorite",
   handler: favoriteAdd
 });
 
 app.http("favoriteRemove", {
   methods: ["DELETE", "OPTIONS"],
   authLevel: "anonymous",
-  route: "api/v1/recipe/{id}/favorite",
+  route: "api/v1/recipes/{id}/favorite",
   handler: favoriteRemove
 });

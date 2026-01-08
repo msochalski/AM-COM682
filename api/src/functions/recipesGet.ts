@@ -62,14 +62,14 @@ export const recipesUpdate = createHttpHandler(async (request) => {
 app.http("recipeGet", {
   methods: ["GET", "OPTIONS"],
   authLevel: "anonymous",
-  route: "api/v1/recipe/{id}",
+  route: "api/v1/recipes/{id}",
   handler: recipesGet
 });
 
 app.http("recipeUpdate", {
   methods: ["PATCH", "PUT"],
   authLevel: "anonymous",
-  route: "api/v1/recipe/{id}",
+  route: "api/v1/recipes/{id}",
   handler: recipesUpdate
 });
 
@@ -97,7 +97,7 @@ export const recipeComments = createHttpHandler(async (request) => {
 app.http("recipeCommentsList", {
   methods: ["GET", "OPTIONS"],
   authLevel: "anonymous",
-  route: "api/v1/recipe/{id}/comments",
+  route: "api/v1/recipes/{id}/comments",
   handler: recipeComments
 });
 
@@ -123,6 +123,6 @@ export const recipeCommentsCreate = createHttpHandler(async (request) => {
 app.http("recipeCommentsCreate", {
   methods: ["POST"],
   authLevel: "anonymous",
-  route: "api/v1/recipe/{id}/comments",
+  route: "api/v1/recipes/{id}/comments",
   handler: recipeCommentsCreate
 });

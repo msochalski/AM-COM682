@@ -34,13 +34,13 @@ export const recipesBlock = createHttpHandler(async (request) => {
 app.http("recipesApprove", {
   methods: ["POST", "OPTIONS"],
   authLevel: "anonymous",
-  route: "api/v1/recipe/{id}/approve",
+  route: "api/v1/recipes/{id}/approve",
   handler: recipesApprove
 });
 
 app.http("recipesBlock", {
   methods: ["POST", "OPTIONS"],
   authLevel: "anonymous",
-  route: "api/v1/recipe/{id}/block",
+  route: "api/v1/recipes/{id}/block",
   handler: recipesBlock
 });
